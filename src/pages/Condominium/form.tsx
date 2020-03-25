@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import { Form, Col, Input, Button, Row, Spin, Select } from "antd";
 import { Typography } from "antd";
 import { FormOutlined } from "@ant-design/icons";
+import { Link, useHistory } from "react-router-dom";
+
+import api from "../../services/api";
 const FormItem = Form.Item;
 
 const { Title } = Typography;
@@ -9,7 +12,7 @@ const { Option } = Select;
 
 const prefixSelector = (
   <Form.Item name="prefix" noStyle>
-    <Select style={{ width: 50 }}>
+    <Select style={{ width: 70 }}>
       <Option value="98">+98</Option>
       <Option value="99">+99</Option>
     </Select>
@@ -25,12 +28,56 @@ const validateMessages = {
 };
 
 export default function CondominiumForm() {
+  const [cnpj, setCnpj] = useState("");
+  const [nome, setNome] = useState("");
+  const [email, setEmail] = useState("");
+  const [logradouro, setLogradouro] = useState("");
+  const [numero, setNumero] = useState("");
+  const [bairro, setBairro] = useState("");
+  const [telefone, setTelefone] = useState("");
+  const [classe, setClasse] = useState("");
+  const [blocos, setBlocos] = useState("");
+  const [preco, setPreco] = useState("");
+
+  const history = useHistory();
+
+  async function handleSubmite(e: { preventDefault: () => void }) {
+    e.preventDefault();
+
+    const data = {
+      cnpj,
+      nome,
+      email,
+      logradouro,
+      numero,
+      bairro,
+      telefone,
+      classe,
+      blocos,
+      preco
+    };
+
+    try {
+      const response = await api.post("create", data);
+
+      alert(`Nome: ${response.data.nome}`);
+
+      history.push("/condominium");
+    } catch (err) {
+      alert("Erro no cadastro do condomínio.");
+    }
+  }
+
   const [loading, setLoading] = useState(false);
 
   return (
     <Spin spinning={loading} tip="Carregando...">
       <Title level={2}>Cadastro de Condominio</Title>
-      <Form layout="vertical" validateMessages={validateMessages}>
+      <Form
+        onSubmitCapture={handleSubmite}
+        layout="vertical"
+        validateMessages={validateMessages}
+      >
         <Row>
           <Col span={8}>
             <FormItem
@@ -43,7 +90,7 @@ export default function CondominiumForm() {
               ]}
               style={{ marginRight: 8 }}
             >
-              <Input />
+              <Input value={cnpj} onChange={e => setCnpj(e.target.value)} />
             </FormItem>
           </Col>
 
@@ -58,7 +105,7 @@ export default function CondominiumForm() {
               ]}
               style={{ marginRight: 8 }}
             >
-              <Input />
+              <Input value={nome} onChange={e => setNome(e.target.value)} />
             </FormItem>
           </Col>
 
@@ -74,7 +121,7 @@ export default function CondominiumForm() {
               ]}
               style={{ marginRight: 8 }}
             >
-              <Input />
+              <Input value={email} onChange={e => setEmail(e.target.value)} />
             </FormItem>
           </Col>
         </Row>
@@ -93,7 +140,10 @@ export default function CondominiumForm() {
               ]}
               style={{ marginRight: 8 }}
             >
-              <Input />
+              <Input
+                value={logradouro}
+                onChange={e => setLogradouro(e.target.value)}
+              />
             </FormItem>
           </Col>
 
@@ -108,7 +158,7 @@ export default function CondominiumForm() {
               ]}
               style={{ marginRight: 8 }}
             >
-              <Input />
+              <Input value={numero} onChange={e => setNumero(e.target.value)} />
             </FormItem>
           </Col>
 
@@ -123,7 +173,7 @@ export default function CondominiumForm() {
               ]}
               style={{ marginRight: 8 }}
             >
-              <Input />
+              <Input value={bairro} onChange={e => setBairro(e.target.value)} />
             </FormItem>
           </Col>
 
@@ -139,7 +189,12 @@ export default function CondominiumForm() {
               ]}
               style={{ marginRight: 8 }}
             >
-              <Input addonBefore={prefixSelector} style={{ width: "100%" }} />
+              <Input
+                addonBefore={prefixSelector}
+                style={{ width: "100%" }}
+                value={telefone}
+                onChange={e => setTelefone(e.target.value)}
+              />
             </FormItem>
           </Col>
 
@@ -153,11 +208,33 @@ export default function CondominiumForm() {
               <Select
                 placeholder="Selecione uma opção de classe."
                 style={{ width: "100%" }}
-                // onChange={handleChange}
+                value={classe}
+                //onChange={e => setClasse(e.target.value)}
               >
-                <Option value="A">A</Option>
-                <Option value="B">B</Option>
-                <Option value="C">C</Option>
+                <Option
+                  value="A"
+                  onChange={(e: {
+                    target: { value: React.SetStateAction<string> };
+                  }) => setClasse(e.target.value)}
+                >
+                  A
+                </Option>
+                <Option
+                  value="B"
+                  onChange={(e: {
+                    target: { value: React.SetStateAction<string> };
+                  }) => setClasse(e.target.value)}
+                >
+                  B
+                </Option>
+                <Option
+                  value="C"
+                  onChange={(e: {
+                    target: { value: React.SetStateAction<string> };
+                  }) => setClasse(e.target.value)}
+                >
+                  C
+                </Option>
               </Select>
             </FormItem>
           </Col>
@@ -173,7 +250,7 @@ export default function CondominiumForm() {
               ]}
               style={{ marginRight: 8 }}
             >
-              <Input />
+              <Input value={blocos} onChange={e => setBlocos(e.target.value)} />
             </FormItem>
           </Col>
 
@@ -188,12 +265,17 @@ export default function CondominiumForm() {
               ]}
               style={{ marginRight: 8 }}
             >
-              <Input />
+              <Input value={preco} onChange={e => setPreco(e.target.value)} />
             </FormItem>
           </Col>
         </Row>
         <Row>
-          <Button type="primary">
+          <Button type="primary" style={{ marginRight: 8 }}>
+            <Link to="/condominium">
+            Voltar
+            </Link>
+          </Button>
+          <Button type="primary" htmlType="submit">
             <FormOutlined />
             Cadastrar
           </Button>
